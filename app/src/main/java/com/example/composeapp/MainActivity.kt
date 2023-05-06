@@ -1,6 +1,8 @@
 package com.example.composeapp
 
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.text.format.DateFormat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -59,13 +61,19 @@ fun MainScreen(){
         }
         Text(text = dateText)
         Button(onClick = {
-            val date = Date()
-            dateText = date.toString()
+            dateText = getDataText()
         }) {
             Text(text = "Time!")
 
         }
     }
+}
+
+private fun getDataText() :String {
+    val date = Date()
+    val local = Locale.getDefault()
+    val pattern = DateFormat.getBestDateTimePattern(local,"yyyyMMddHHmmss")
+    return SimpleDateFormat(pattern,local).format(date)
 }
 
 @Composable
