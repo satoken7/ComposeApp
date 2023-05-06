@@ -39,23 +39,22 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(){
+fun MainScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
     Column(modifier = Modifier
         .padding(16.dp)
         .fillMaxWidth()) {
-        var isAndroid by remember {
-            mutableStateOf(true)
-        }
+        var isAndroid = viewModel.isAndroid.collectAsState()
+
         var dateText by remember {
             mutableStateOf("")
         }
-        if (isAndroid) {
+        if (isAndroid.value) {
             Greeting(name = "Android")
         } else {
             Greeting(name = "iPhone")
         }
         Button(onClick = {
-            isAndroid = !isAndroid
+            viewModel.onClick()
         }) {
             Text(text = "Push me!!")
         }
