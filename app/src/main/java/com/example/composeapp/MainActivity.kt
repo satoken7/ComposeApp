@@ -16,6 +16,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.composeapp.ui.theme.ComposeAppTheme
 
 
@@ -38,6 +42,22 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home" ) {
+        composable("home") {
+            HomeScreen(viewModel,navController)
+        }
+        composable("comm") {
+            CommScreen()
+        }
+    }
+}
+
+@Composable
+fun HomeScreen(
+    viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    navController: NavController = rememberNavController()
+) {
     Column(modifier = Modifier
         .padding(16.dp)
         .fillMaxWidth()) {
@@ -55,7 +75,17 @@ fun MainScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.v
             Text(text = "Push me!!")
         }
         Text(text = dateText.value)
+        
+        Button(onClick = { navController.navigate("comm")
+        }) {
+            Text(text = "Navigate CommScreen")
+        }
     }
+}
+
+@Composable
+fun CommScreen(){
+    Greeting(name = "CommScreen")
 }
 @Composable
 fun Greeting(name: String) {
@@ -64,8 +94,16 @@ fun Greeting(name: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun MainPreview() {
     ComposeAppTheme {
-       MainScreen()
+       HomeScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CommPreview() {
+    ComposeAppTheme {
+        CommScreen()
     }
 }
