@@ -9,8 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,7 +68,8 @@ class MainActivity : ComponentActivity() {
 enum class Route {
     HOME,
     COMM,
-    REPOS
+    REPOS,
+    INPUT,
 }
 const val TAG = "ログのタグ"
 @Composable
@@ -81,6 +81,9 @@ fun MainScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.v
         }
         composable(Route.COMM.name) {
             CommScreen(viewModel,navController)
+        }
+        composable(Route.INPUT.name) {
+            InputScreen(viewModel,navController)
         }
         composable(Route.REPOS.name) {
             ReposScreen(viewModel)
@@ -129,7 +132,9 @@ fun CommScreen(
         Greeting(name = "CommScreen")
         val login = viewModel.login.collectAsState()
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { navController.navigate(Route.INPUT.name) },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -154,6 +159,17 @@ fun CommScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun InputScreen(
+    viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    navController: NavController = rememberNavController()
+) {
+    var text by remember{ mutableStateOf("") }
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        TextField(value = text, onValueChange = {text = it}, label = { Text(text = "user")})
     }
 }
 
@@ -210,6 +226,13 @@ fun MainPreview() {
 fun CommPreview() {
     ComposeAppTheme {
         CommScreen()
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun InputPreview() {
+    ComposeAppTheme {
+        InputScreen()
     }
 }
 
