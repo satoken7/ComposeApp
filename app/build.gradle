@@ -65,4 +65,7 @@ dependencies {
 
     def nav_version = "2.5.3"
     implementation "androidx.navigation:navigation-compose:$nav_version"
+
+    implementation 'com.github.kittinunf.fuel:fuel:2.3.1'
+    implementation 'com.github.kittinunf.fuel:fuel-coroutines:2.3.1'
 }
