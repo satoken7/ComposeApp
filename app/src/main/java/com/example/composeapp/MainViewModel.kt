@@ -69,6 +69,13 @@ class MainViewModel : ViewModel() {
         _login.value = name
     }
 
+    private val json by lazy {
+        Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+            isLenient = true
+        }
+    }
     fun onGet() {
         Log.d(TAG,"MainViewModel onGet")
         if(_inProgress.value) {
@@ -85,11 +92,6 @@ class MainViewModel : ViewModel() {
                 Log.d(TAG,"response=$response")
                 Log.d(TAG,"result=$result")
                 val text = result.get()
-                val json = Json {
-                    ignoreUnknownKeys = true
-                    coerceInputValues = true
-                    isLenient = true
-                }
                 val user = json.decodeFromString<GHUsers>(text)
                 val (_, _, reposResult ) = Fuel.get(user.reposUrl).awaitStringResponseResult()
                 val reposText = reposResult.get()
