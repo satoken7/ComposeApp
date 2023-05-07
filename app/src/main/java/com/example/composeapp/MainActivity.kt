@@ -1,6 +1,7 @@
 package com.example.composeapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,10 +38,34 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy")
+    }
+
 }
-
 const val TAG = "ログのタグ"
-
 @Composable
 fun MainScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
     val navController = rememberNavController()
@@ -48,7 +74,10 @@ fun MainScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.v
             HomeScreen(viewModel,navController)
         }
         composable("comm") {
-            CommScreen()
+            CommScreen(viewModel,navController)
+        }
+        composable("repos") {
+            ReposScreen(viewModel,)
         }
     }
 }
@@ -84,7 +113,10 @@ fun HomeScreen(
 }
 
 @Composable
-fun CommScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
+fun CommScreen(
+    viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    navController: NavController = rememberNavController()
+) {
     Column(modifier = Modifier
         .padding(16.dp)
         .fillMaxWidth()) {
@@ -97,7 +129,10 @@ fun CommScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.v
         ) {
             Text(text = login.value)
             Button(
-                onClick = { viewModel.onGet()}
+                onClick = {
+                    viewModel.onGet()
+                    navController.navigate("repos")
+                }
             ) {
                 Text(text = "onGet!!")
             }
@@ -113,7 +148,28 @@ fun CommScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.v
                 }
             }
         }
+    }
+}
 
+@Composable
+fun ReposScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
+    Column(modifier = Modifier
+        .fillMaxWidth()) {
+        val login = viewModel.login.collectAsState()
+        val repos = viewModel.repos.collectAsState()
+        Text(
+            text = "user = ${login.value} size = ${repos.value.size}",
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Divider()
+        LazyColumn{
+            items(repos.value) {
+                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    Text(text = it.name, fontSize = 16.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                    Text(text = it.updatedAt, fontSize = 8.sp, modifier = Modifier.padding(horizontal = 16.dp))
+                }
+            }
+        }
     }
     val inProgress = viewModel.inProgress.collectAsState()
     if (inProgress.value) {
@@ -148,5 +204,13 @@ fun MainPreview() {
 fun CommPreview() {
     ComposeAppTheme {
         CommScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ReposPreview() {
+    ComposeAppTheme {
+        ReposScreen()
     }
 }

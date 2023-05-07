@@ -11,6 +11,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.util.*
 
 class MainViewModel : ViewModel() {
@@ -28,6 +30,9 @@ class MainViewModel : ViewModel() {
 
     private val _login = MutableStateFlow("")
     val login : StateFlow<String> = _login
+
+    private val _repos = MutableStateFlow(listOf<GHRepos>())
+    val repos : StateFlow<List<GHRepos>> = _repos
 
     init {
         viewModelScope.launch {
@@ -52,18 +57,22 @@ class MainViewModel : ViewModel() {
 
 
     fun onClick() {
+        Log.d(TAG,"MainViewModel onClick")
         _isAndroid.value = !_isAndroid.value
     }
     fun onDismiss() {
+        Log.d(TAG,"MainViewModel onDismiss")
         _message.value = ""
     }
     fun onSelect(name: String) {
+        Log.d(TAG,"MainViewModel onSelect")
         _login.value = name
     }
 
     fun onGet() {
+        Log.d(TAG,"MainViewModel onGet")
         if(_inProgress.value) {
-            Log.d(TAG,"プログレス")
+            Log.d(TAG,"inProgress")
             return
         } else {
             _inProgress.value = true
@@ -75,9 +84,18 @@ class MainViewModel : ViewModel() {
                 Log.d(TAG,"request=$request")
                 Log.d(TAG,"response=$response")
                 Log.d(TAG,"result=$result")
-                result.get()
+                val text = result.get()
+                val json = Json {
+                    ignoreUnknownKeys = true
+                    coerceInputValues = true
+                    isLenient = true
+                }
+                val user = json.decodeFromString<GHUsers>(text)
+                val (_, _, reposResult ) = Fuel.get(user.reposUrl).awaitStringResponseResult()
+                val reposText = reposResult.get()
+                json.decodeFromString<List<GHRepos>>(reposText)
             }.onSuccess {
-                _message.value = it
+                _repos.value = it
             }.onFailure {
                 Log.e(TAG,"onFailureですよ$it")
                 _message.value = it.message.toString()
