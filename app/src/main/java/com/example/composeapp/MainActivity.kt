@@ -65,19 +65,25 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+
+enum class Route {
+    HOME,
+    COMM,
+    REPOS
+}
 const val TAG = "ログのタグ"
 @Composable
 fun MainScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "home" ) {
-        composable("home") {
+    NavHost(navController = navController, startDestination = Route.HOME.name ) {
+        composable(Route.HOME.name) {
             HomeScreen(viewModel,navController)
         }
-        composable("comm") {
+        composable(Route.COMM.name) {
             CommScreen(viewModel,navController)
         }
-        composable("repos") {
-            ReposScreen(viewModel,)
+        composable(Route.REPOS.name) {
+            ReposScreen(viewModel)
         }
     }
 }
@@ -105,7 +111,7 @@ fun HomeScreen(
         }
         Text(text = dateText.value)
         
-        Button(onClick = { navController.navigate("comm")
+        Button(onClick = { navController.navigate(Route.COMM.name)
         }) {
             Text(text = "Navigate CommScreen")
         }
@@ -131,7 +137,7 @@ fun CommScreen(
             Button(
                 onClick = {
                     viewModel.onGet()
-                    navController.navigate("repos")
+                    navController.navigate(Route.REPOS.name)
                 }
             ) {
                 Text(text = "onGet!!")
