@@ -8,10 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -134,7 +138,10 @@ fun CommScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { navController.navigate(Route.INPUT.name) },
+                .clickable {
+                    viewModel.onUpdateDraftLogin(login.value)
+                    navController.navigate(Route.INPUT.name)
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -167,9 +174,25 @@ fun InputScreen(
     viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     navController: NavController = rememberNavController()
 ) {
-    var text by remember{ mutableStateOf("") }
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        TextField(value = text, onValueChange = {text = it}, label = { Text(text = "user")})
+    val draftLogin = viewModel.draftLogin.collectAsState()
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)) {
+        TextField(
+            value = draftLogin.value,
+            onValueChange = {
+                if (it.length < 20) {
+                    viewModel.onUpdateDraftLogin(it)
+                }
+            },
+            label = { Text(text = "user") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {
+                viewModel.onSelect(draftLogin.value)
+                navController.popBackStack()
+            } ),
+            singleLine = true
+        )
     }
 }
 

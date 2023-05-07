@@ -31,6 +31,9 @@ class MainViewModel : ViewModel() {
     private val _login = MutableStateFlow("")
     val login : StateFlow<String> = _login
 
+    private val _draftLogin = MutableStateFlow("")
+    val draftLogin : StateFlow<String> = _draftLogin
+
     private val _repos = MutableStateFlow(listOf<GHRepos>())
     val repos : StateFlow<List<GHRepos>> = _repos
 
@@ -65,8 +68,13 @@ class MainViewModel : ViewModel() {
         _message.value = ""
     }
     fun onSelect(name: String) {
-        Log.d(TAG,"MainViewModel onSelect")
+        Log.d(TAG,"MainViewModel onSelect $name")
         _login.value = name
+    }
+
+    fun onUpdateDraftLogin(name: String) {
+        Log.d(TAG,"MainViewModel onUpdateDraftLogin $name")
+        _draftLogin.value = name
     }
 
     private val json by lazy {
