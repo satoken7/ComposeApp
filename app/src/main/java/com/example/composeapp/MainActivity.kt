@@ -75,7 +75,7 @@ enum class Route {
     REPOS,
     INPUT,
 }
-const val TAG = "ログのタグ"
+const val TAG = "タグ"
 @Composable
 fun MainScreen(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
     val navController = rememberNavController()
